@@ -1,12 +1,18 @@
 {
   "name": "discordbot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Discord Bot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "deploy": "node deploy-commands.js",
+    "test": "echo \"No tests specified\""
   },
-  "keywords": [],
+  "keywords": [
+    "discord",
+    "discord-bot",
+    "nodejs"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
@@ -15,5 +21,8 @@
     "discord-api-types": "^0.38.50",
     "discord.js": "^14.27.0",
     "dotenv": "^17.4.2"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
