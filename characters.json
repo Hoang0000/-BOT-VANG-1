@@ -1,0 +1,122 @@
+{
+  "akekuri": {
+    "name": "Akekuri",
+    "image": "./images/Akekuri.jpg"
+  },
+  "alesh": {
+    "name": "Alesh",
+    "image": "./images/Alesh.jpg"
+  },
+  "antal": {
+    "name": "Antal",
+    "image": "./images/Antal.jpg"
+  },
+  "arcane-dps": {
+    "name": "Arcane-Dps",
+    "image": "./images/Arcane1.jpg"
+  },
+  "arcane-sp": {
+    "name": "Arcane-Sp",
+    "image": "./images/Arcane2.jpg"
+  },
+  "arclight": {
+    "name": "Arclight",
+    "image": "./images/Arclight.jpg"
+  },
+  "ardelia": {
+    "name": "Ardelia",
+    "image": "./images/Ardelia.jpg"
+  },
+  "avywenna": {
+    "name": "Avywenna",
+    "image": "./images/Avywenna.jpg"
+  },
+  "camille": {
+    "name": "Camille",
+    "image": "./images/Camille.jpg"
+  },
+  "catcher": {
+    "name": "Catcher",
+    "image": "./images/Catcher.jpg"
+  },
+  "chen qianyu": {
+    "name": "Chen Qianyu",
+    "image": "./images/Chen Qianyu.jpg"
+  },
+  "da pan": {
+    "name": "Da pan",
+    "image": "./images/Da pan.jpg"
+  },
+  "ember": {
+    "name": "Ember",
+    "image": "./images/Ember.jpg"
+  },
+  "endministrator": {
+    "name": "Endministrator",
+    "image": "./images/Endministrator.jpg"
+  },
+  "estella": {
+    "name": "Estella",
+    "image": "./images/Estella.jpg"
+  },
+  "fluorite": {
+    "name": "Fluorite",
+    "image": "./images/Fluorite.jpg"
+  },
+  "gilberta": {
+    "name": "Gilberta",
+    "image": "./images/Gilberta.jpg"
+  },
+  "laevatain": {
+    "name": "Laevatain",
+    "image": "./images/Laevatain.jpg"
+  },
+  "last rite": {
+    "name": "Last Rite",
+    "image": "./images/Last Rite.jpg"
+  },
+  "lifeng": {
+    "name": "Lifeng",
+    "image": "./images/Lifeng.jpg"
+  },
+  "mifu": {
+    "name": "Mifu",
+    "image": "./images/Mifu.jpg"
+  },
+  "perlica": {
+    "name": "Perlica",
+    "image": "./images/Perlica.jpg"
+  },
+  "pogranichnik": {
+    "name": "Pogranichnik",
+    "image": "./images/Pogranichnik.jpg"
+  },
+  "rossi": {
+    "name": "Rossi",
+    "image": "./images/Rossi.jpg"
+  },
+  "snowshine": {
+    "name": "Snowshine",
+    "image": "./images/Snowshine.jpg"
+  },
+  "tang tang": {
+    "name": "Tang Tang",
+    "image": "./images/Tang Tang.jpg"
+  },
+  "wulfgard": {
+    "name": "Wulfgard",
+    "image": "./images/Wulfgard.jpg"
+  },
+  "xaihi": {
+    "name": "Xaihi",
+    "image": "./images/Xaihi.jpg"
+  },
+  "yvonne": {
+    "name": "Yvonne",
+    "image": "./images/Yvonne.jpg"
+  },
+  "zhuang fangyi": {
+    "name": "Zhuang Fangyi",
+    "image": "./images/Zhuang Fangyi.jpg"
+  }
+}
