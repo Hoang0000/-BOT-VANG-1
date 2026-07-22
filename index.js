@@ -46,11 +46,38 @@ client.on("messageCreate", async (message) => {
     }
 
     // ========================
-    // !TênNhânVật
+    // Phải nhập ít nhất 3 ký tự
     // ========================
-    const character = characters[cmd];
+    if (cmd.length < 3) {
+        return message.reply("❌ Hãy nhập ít nhất **3 ký tự**.");
+    }
 
-    if (!character) return;
+    // ========================
+    // Tìm các nhân vật bắt đầu bằng chuỗi nhập
+    // ========================
+    const matches = Object.entries(characters).filter(([key]) =>
+        key.startsWith(cmd)
+    );
+
+    // Không tìm thấy
+    if (matches.length === 0) {
+        return message.reply("❌ Không tìm thấy nhân vật.");
+    }
+
+    // Có nhiều kết quả
+    if (matches.length > 1) {
+
+        const list = matches
+            .map(([_, data]) => `• ${data.name}`)
+            .join("\n");
+
+        return message.reply(
+            `🔎 Có nhiều nhân vật phù hợp:\n\n${list}\n\n➡️ Hãy nhập thêm vài ký tự.`
+        );
+    }
+
+    // Chỉ có 1 kết quả
+    const character = matches[0][1];
 
     return message.channel.send({
         content: `**${character.name}**`,
