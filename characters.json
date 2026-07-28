@@ -69,6 +69,10 @@
   },
   "laevatain": {
   "name": "Laevatain",
+  "aliases": [
+    "laevatain",
+    "Sủi"
+  ],
   "image": "./images/Laevatain.jpg"
   },
   "last rite": {
