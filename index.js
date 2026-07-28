@@ -23,10 +23,8 @@ client.once("clientReady", () => {
 // Xử lý tin nhắn
 client.on("messageCreate", async (message) => {
 
-    // Bỏ qua tin nhắn của bot
     if (message.author.bot) return;
 
-    // Chỉ nhận lệnh bắt đầu bằng !
     if (!message.content.startsWith("!")) return;
 
     const cmd = message.content.slice(1).trim().toLowerCase();
@@ -46,18 +44,29 @@ client.on("messageCreate", async (message) => {
     }
 
     // ========================
-    // Phải nhập ít nhất 3 ký tự
+    // Ít nhất 3 ký tự
     // ========================
     if (cmd.length < 3) {
         return message.reply("❌ Hãy nhập ít nhất **3 ký tự**.");
     }
 
     // ========================
-    // Tìm các nhân vật bắt đầu bằng chuỗi nhập
+    // Tìm kiếm
     // ========================
-    const matches = Object.entries(characters).filter(([key]) =>
-        key.startsWith(cmd)
-    );
+    const matches = [];
+
+    for (const character of Object.values(characters)) {
+
+        // Key chính
+        const names = [
+            character.name.toLowerCase(),
+            ...(character.aliases || []).map(a => a.toLowerCase())
+        ];
+
+        if (names.some(name => name.startsWith(cmd))) {
+            matches.push(character);
+        }
+    }
 
     // Không tìm thấy
     if (matches.length === 0) {
@@ -68,7 +77,7 @@ client.on("messageCreate", async (message) => {
     if (matches.length > 1) {
 
         const list = matches
-            .map(([_, data]) => `• ${data.name}`)
+            .map(c => `• ${c.name}`)
             .join("\n");
 
         return message.reply(
@@ -76,13 +85,24 @@ client.on("messageCreate", async (message) => {
         );
     }
 
-    // Chỉ có 1 kết quả
-    const character = matches[0][1];
+    const character = matches[0];
 
-    return message.channel.send({
-        content: `**${character.name}**`,
-        files: [character.image]
-    });
+    try {
+
+        await message.channel.send({
+            content: `**${character.name}**`,
+            files: [character.image]
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        return message.reply(
+            `❌ Không thể gửi ảnh.\nĐường dẫn: ${character.image}`
+        );
+
+    }
 
 });
 
