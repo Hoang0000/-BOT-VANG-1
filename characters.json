@@ -122,5 +122,9 @@
   "fangyi": {
     "name": "Fangyi",
     "image": "./images/Zhuang Fangyi.jpg"
+  },
+    "liino": {
+    "name": "Liino",
+    "image": "./images/Liino.jpg"
   }
 }
