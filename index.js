@@ -70,7 +70,7 @@ client.on("messageCreate", async (message) => {
 
     // Không tìm thấy
     if (matches.length === 0) {
-        return message.reply("❌ Không tìm thấy nhân vật.");
+        return message.reply("❌ Không tìm thấy nhân vật. Nhập lệnh !list để tìm");
     }
 
     // Có nhiều kết quả
