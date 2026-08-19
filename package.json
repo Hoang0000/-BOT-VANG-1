@@ -4,7 +4,9 @@
   "description": "Discord Bot",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "deploy": "node deploy-commands.js",
+    "test": "echo \"No tests specified\""
   },
   "keywords": [
     "discord",
