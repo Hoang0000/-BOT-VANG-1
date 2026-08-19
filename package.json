@@ -4,9 +4,7 @@
   "description": "Discord Bot",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "deploy": "node deploy-commands.js",
-    "test": "echo \"No tests specified\""
+    "start": "node index.js"
   },
   "keywords": [
     "discord",
@@ -23,6 +21,6 @@
     "dotenv": "^17.4.2"
   },
   "engines": {
-    "node": ">=20"
+    "node": "20.x"
   }
 }
