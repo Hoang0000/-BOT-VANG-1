@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "deploy": "node deploy-commands.js",
-    "test": "echo \"No tests specified\""
+    "deploy": "node deploy-commands.js"
   },
   "keywords": [
     "discord",
@@ -17,8 +16,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@discordjs/rest": "^2.6.2",
-    "discord-api-types": "^0.38.50",
     "discord.js": "^14.27.0",
     "dotenv": "^17.4.2"
   },
