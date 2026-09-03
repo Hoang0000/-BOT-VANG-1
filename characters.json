@@ -127,7 +127,7 @@
     "name": "Liino",
     "image": "./images/Liino.jpg"
   },
-      "typhoeus": {
+    "typhoeus": {
     "name": "Typhoeus",
     "image": "./images/Typhoeus.jpg"
   }
