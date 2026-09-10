@@ -80,7 +80,7 @@ function createCharacterList(page = 0) {
             const button = new ButtonBuilder()
                 .setCustomId(`char_${key}`)
                 .setLabel(character.name.slice(0, 80))
-                .setEmoji("🖼️")
+                .setEmoji("✦")
                 .setStyle(ButtonStyle.Secondary);
 
             row.addComponents(button);
