@@ -23,12 +23,14 @@ const client = new Client({
 // CẤU HÌNH
 // ========================
 
-// 18 nhân vật / trang
-// 3 cột x 6 hàng
-const CHARACTERS_PER_PAGE = 18;
+// 3 cột x 4 hàng = 12 nhân vật
+// + 1 hàng nút chuyển trang
+// = 5 ActionRow, đúng giới hạn Discord
+const CHARACTERS_PER_PAGE = 12;
+
 
 // ========================
-// TẠO MENU DANH SÁCH
+// TẠO DANH SÁCH
 // ========================
 
 function createCharacterList(page = 0) {
@@ -47,7 +49,7 @@ function createCharacterList(page = 0) {
     );
 
     // ========================
-    // Embed tiêu đề
+    // Embed
     // ========================
 
     const embed = new EmbedBuilder()
@@ -58,7 +60,8 @@ function createCharacterList(page = 0) {
         );
 
     // ========================
-    // Tạo 3 cột
+    // Tạo 4 hàng
+    // Mỗi hàng 3 nút
     // ========================
 
     const rows = [];
@@ -67,7 +70,10 @@ function createCharacterList(page = 0) {
 
         const row = new ActionRowBuilder();
 
-        const rowCharacters = pageCharacters.slice(i, i + 3);
+        const rowCharacters = pageCharacters.slice(
+            i,
+            i + 3
+        );
 
         for (const [key, character] of rowCharacters) {
 
@@ -84,7 +90,7 @@ function createCharacterList(page = 0) {
     }
 
     // ========================
-    // Nút chuyển trang
+    // NÚT CHUYỂN TRANG
     // ========================
 
     const previous = new ButtonBuilder()
@@ -114,6 +120,7 @@ function createCharacterList(page = 0) {
             next
         );
 
+    // Thêm hàng chuyển trang
     rows.push(navigation);
 
     return {
@@ -122,16 +129,22 @@ function createCharacterList(page = 0) {
     };
 }
 
+
 // ========================
-// BOT READY
+// BOT SẴN SÀNG
 // ========================
 
 client.once("clientReady", () => {
-    console.log(`✅ Đăng nhập: ${client.user.tag}`);
+
+    console.log(
+        `✅ Đăng nhập: ${client.user.tag}`
+    );
+
 });
 
+
 // ========================
-// LỆNH !list + !tên
+// XỬ LÝ TIN NHẮN
 // ========================
 
 client.on("messageCreate", async (message) => {
@@ -139,7 +152,7 @@ client.on("messageCreate", async (message) => {
     // Bỏ qua bot
     if (message.author.bot) return;
 
-    // Chỉ nhận !
+    // Chỉ nhận lệnh !
     if (!message.content.startsWith("!")) return;
 
     const cmd = message.content
@@ -147,19 +160,34 @@ client.on("messageCreate", async (message) => {
         .trim()
         .toLowerCase();
 
+
     // ========================
     // !list
     // ========================
 
     if (cmd === "list") {
 
-        return message.channel.send(
-            createCharacterList(0)
-        );
+        try {
+
+            await message.channel.send(
+                createCharacterList(0)
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Lỗi !list:",
+                error
+            );
+
+        }
+
+        return;
     }
 
+
     // ========================
-    // Ít nhất 3 ký tự
+    // ÍT NHẤT 3 KÝ TỰ
     // ========================
 
     if (cmd.length < 3) {
@@ -167,25 +195,30 @@ client.on("messageCreate", async (message) => {
         return message.reply(
             "❌ Hãy nhập ít nhất **3 ký tự**."
         );
+
     }
+
 
     // ========================
     // TÌM NHÂN VẬT
     // ========================
 
-    const matches = Object.values(characters).filter(character => {
+    const matches = Object.values(characters)
+        .filter(character => {
 
-        const names = [
-            character.name,
-            ...(character.aliases || [])
-        ].map(name =>
-            name.toLowerCase()
-        );
+            const names = [
+                character.name,
+                ...(character.aliases || [])
+            ].map(name =>
+                name.toLowerCase()
+            );
 
-        return names.some(name =>
-            name.startsWith(cmd)
-        );
-    });
+            return names.some(name =>
+                name.startsWith(cmd)
+            );
+
+        });
+
 
     // Không tìm thấy
     if (matches.length === 0) {
@@ -193,9 +226,14 @@ client.on("messageCreate", async (message) => {
         return message.reply(
             "❌ Không tìm thấy nhân vật."
         );
+
     }
 
-    // Nhiều kết quả
+
+    // ========================
+    // NHIỀU KẾT QUẢ
+    // ========================
+
     if (matches.length > 1) {
 
         const list = matches
@@ -209,7 +247,9 @@ client.on("messageCreate", async (message) => {
             `${list}\n\n` +
             `➡️ Hãy nhập thêm vài ký tự.`
         );
+
     }
+
 
     // ========================
     // GỬI ẢNH
@@ -220,19 +260,31 @@ client.on("messageCreate", async (message) => {
     try {
 
         await message.channel.send({
-            content: `🖼️ **${character.name}**`,
-            files: [character.image]
+
+            content:
+                `🖼️ **${character.name}**`,
+
+            files: [
+                character.image
+            ]
+
         });
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "❌ Lỗi gửi ảnh:",
+            error
+        );
 
         await message.reply(
             `❌ Không thể gửi ảnh **${character.name}**.`
         );
+
     }
+
 });
+
 
 // ========================
 // XỬ LÝ NÚT BẤM
@@ -242,11 +294,14 @@ client.on("interactionCreate", async (interaction) => {
 
     if (!interaction.isButton()) return;
 
+
     // ========================
-    // NÚT NHÂN VẬT
+    // BẤM NHÂN VẬT
     // ========================
 
-    if (interaction.customId.startsWith("char_")) {
+    if (
+        interaction.customId.startsWith("char_")
+    ) {
 
         const key = interaction.customId
             .replace("char_", "");
@@ -256,34 +311,58 @@ client.on("interactionCreate", async (interaction) => {
         if (!character) {
 
             return interaction.reply({
-                content: "❌ Không tìm thấy nhân vật.",
+
+                content:
+                    "❌ Không tìm thấy nhân vật.",
+
                 ephemeral: true
+
             });
+
         }
+
 
         try {
 
             await interaction.reply({
-                content: `🖼️ **${character.name}**`,
-                files: [character.image]
+
+                content:
+                    `🖼️ **${character.name}**`,
+
+                files: [
+                    character.image
+                ]
+
             });
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "❌ Lỗi gửi ảnh:",
+                error
+            );
 
-            await interaction.reply({
-                content:
-                    `❌ Không thể gửi ảnh **${character.name}**.`,
-                ephemeral: true
-            });
+            if (!interaction.replied) {
+
+                await interaction.reply({
+
+                    content:
+                        `❌ Không thể gửi ảnh **${character.name}**.`,
+
+                    ephemeral: true
+
+                });
+
+            }
+
         }
 
         return;
     }
 
+
     // ========================
-    // TRANG TRƯỚC / SAU
+    // CHUYỂN TRANG
     // ========================
 
     if (
@@ -292,28 +371,45 @@ client.on("interactionCreate", async (interaction) => {
     ) {
 
         const currentPage = Number(
-            interaction.customId.split("_").pop()
+            interaction.customId
+                .split("_")
+                .pop()
         );
 
         let newPage = currentPage;
 
+
+        // Trang trước
         if (
-            interaction.customId.startsWith("page_prev_")
+            interaction.customId.startsWith(
+                "page_prev_"
+            )
         ) {
+
             newPage--;
+
         }
 
+
+        // Trang sau
         if (
-            interaction.customId.startsWith("page_next_")
+            interaction.customId.startsWith(
+                "page_next_"
+            )
         ) {
+
             newPage++;
+
         }
+
 
         const totalPages = Math.ceil(
             Object.keys(characters).length /
             CHARACTERS_PER_PAGE
         );
 
+
+        // Giới hạn trang
         if (newPage < 0) {
             newPage = 0;
         }
@@ -322,11 +418,27 @@ client.on("interactionCreate", async (interaction) => {
             newPage = totalPages - 1;
         }
 
-        return interaction.update(
-            createCharacterList(newPage)
-        );
+
+        try {
+
+            await interaction.update(
+                createCharacterList(newPage)
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Lỗi chuyển trang:",
+                error
+            );
+
+        }
+
+        return;
     }
+
 });
+
 
 // ========================
 // ĐĂNG NHẬP
