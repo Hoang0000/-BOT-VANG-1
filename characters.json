@@ -1,75 +1,139 @@
 {
   "akekuri": {
-  "name": "Akekuri",
-  "image": "./images/Akekuri.jpg",
-  "emoji": {
     "name": "Akekuri",
-    "id": "1547846367387455602"
+    "image": "./images/Akekuri.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
   }
   },
   "alesh": {
     "name": "Alesh",
-    "image": "./images/Alesh.jpg"
+    "image": "./images/Alesh.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "antal": {
     "name": "Antal",
-    "image": "./images/Antal.jpg"
+    "image": "./images/Antal.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "arcane-dps": {
     "name": "Arcane-Dps",
-    "image": "./images/Arcane1.jpg"
+    "image": "./images/Arcane1.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "arcane-sp": {
     "name": "Arcane-Sp",
-    "image": "./images/Arcane2.jpg"
+    "image": "./images/Arcane2.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "arclight": {
     "name": "Arclight",
-    "image": "./images/Arclight.jpg"
+    "image": "./images/Arclight.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "ardelia": {
     "name": "Ardelia",
-    "image": "./images/Ardelia.jpg"
+    "image": "./images/Ardelia.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "avywenna": {
     "name": "Avywenna",
-    "image": "./images/Avywenna.jpg"
+    "image": "./images/Avywenna.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "camille": {
     "name": "Camille",
-    "image": "./images/Camille.jpg"
+    "image": "./images/Camille.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "catcher": {
     "name": "Catcher",
-    "image": "./images/Catcher.jpg"
+    "image": "./images/Catcher.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "chen qianyu": {
     "name": "Chen Qianyu",
-    "image": "./images/Chen Qianyu.jpg"
+    "image": "./images/Chen Qianyu.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "da pan": {
     "name": "Da pan",
-    "image": "./images/Da pan.jpg"
+    "image": "./images/Da pan.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "ember": {
     "name": "Ember",
-    "image": "./images/Ember.jpg"
+    "image": "./images/Ember.jpg",
+    "emoji": {
+    "name": "Ember",
+    "id": "1521118402175832064"
+  }
   },
   "endministrator": {
     "name": "Endministrator",
-    "image": "./images/Endministrator.jpg"
+    "image": "./images/Endministrator.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "estella": {
     "name": "Estella",
-    "image": "./images/Estella.jpg"
+    "image": "./images/Estella.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "fluorite": {
     "name": "Fluorite",
-    "image": "./images/Fluorite.jpg"
+    "image": "./images/Fluorite.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "gilberta": {
     "name": "Gilberta",
-    "image": "./images/Gilberta.jpg"
+    "image": "./images/Gilberta.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "laevatain": {
   "name": "Laevatain",
@@ -77,62 +141,122 @@
     "sủi",
     "surtr"
   ],
-  "image": "./images/Laevatain.jpg"
+  "image": "./images/Laevatain.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "last rite": {
     "name": "Last Rite",
-    "image": "./images/Last Rite.jpg"
+    "image": "./images/Last Rite.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "lifeng": {
     "name": "Lifeng",
-    "image": "./images/Lifeng.jpg"
+    "image": "./images/Lifeng.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "mifu": {
     "name": "Mifu",
-    "image": "./images/Mifu.jpg"
+    "image": "./images/Mifu.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "perlica": {
     "name": "Perlica",
-    "image": "./images/Perlica.jpg"
+    "image": "./images/Perlica.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "pogranichnik": {
     "name": "Pogranichnik",
-    "image": "./images/Pogranichnik.jpg"
+    "image": "./images/Pogranichnik.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "rossi": {
     "name": "Rossi",
-    "image": "./images/Rossi.jpg"
+    "image": "./images/Rossi.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "snowshine": {
     "name": "Snowshine",
-    "image": "./images/Snowshine.jpg"
+    "image": "./images/Snowshine.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "tang tang": {
     "name": "Tang Tang",
-    "image": "./images/Tang Tang.jpg"
+    "image": "./images/Tang Tang.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "wulfgard": {
     "name": "Wulfgard",
-    "image": "./images/Wulfgard.jpg"
+    "image": "./images/Wulfgard.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "xaihi": {
     "name": "Xaihi",
-    "image": "./images/Xaihi.jpg"
+    "image": "./images/Xaihi.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "yvonne": {
     "name": "Yvonne",
-    "image": "./images/Yvonne.jpg"
+    "image": "./images/Yvonne.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
   "fangyi": {
     "name": "Fangyi",
-    "image": "./images/Zhuang Fangyi.jpg"
+    "image": "./images/Zhuang Fangyi.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
     "liino": {
     "name": "Liino",
-    "image": "./images/Liino.jpg"
+    "image": "./images/Liino.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
+  }
   },
     "typhoeus": {
     "name": "Typhoeus",
-    "image": "./images/Typhoeus.jpg"
+    "image": "./images/Typhoeus.jpg",
+    "emoji": {
+    "name": "Akekuri",
+    "id": "1547845328881979533"
   }
+}
 }

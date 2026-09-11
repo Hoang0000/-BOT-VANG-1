@@ -11,6 +11,10 @@ const {
 
 const characters = require("./characters.json");
 
+// ========================================
+// BOT
+// ========================================
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -19,19 +23,84 @@ const client = new Client({
     ]
 });
 
-// ========================
+// ========================================
 // CẤU HÌNH
-// ========================
+// ========================================
 
-// 12 nhân vật / trang
-// 3 nút mỗi hàng × 4 hàng
-// + 1 hàng chuyển trang = 5 hàng
 const CHARACTERS_PER_PAGE = 12;
 
+// ========================================
+// LẤY EMOJI
+// ========================================
 
-// ========================
-// TẠO DANH SÁCH
-// ========================
+function getCharacterEmoji(character) {
+
+    if (!character || !character.emoji) {
+        return null;
+    }
+
+    // Nếu emoji được lưu trực tiếp:
+    //
+    // "emoji": "123456789012345678"
+    //
+    if (typeof character.emoji === "string") {
+
+        return {
+            id: String(character.emoji)
+        };
+    }
+
+    // Nếu emoji được lưu:
+    //
+    // "emoji": {
+    //     "name": "Akekuri",
+    //     "id": "123456789012345678"
+    // }
+    //
+
+    if (character.emoji.id) {
+
+        return {
+            id: String(character.emoji.id),
+            name: String(
+                character.emoji.name ||
+                "emoji"
+            )
+        };
+    }
+
+    return null;
+}
+
+// ========================================
+// TẠO BUTTON NHÂN VẬT
+// ========================================
+
+function createCharacterButton(key, character) {
+
+    const button = new ButtonBuilder()
+        .setCustomId(`char_${key}`)
+        .setLabel(
+            String(character.name).slice(0, 80)
+        )
+        .setStyle(ButtonStyle.Secondary);
+
+    // ========================================
+    // GẮN EMOJI
+    // ========================================
+
+    const emoji = getCharacterEmoji(character);
+
+    if (emoji) {
+        button.setEmoji(emoji);
+    }
+
+    return button;
+}
+
+// ========================================
+// TẠO DANH SÁCH NHÂN VẬT
+// ========================================
 
 function createCharacterList(page = 0) {
 
@@ -40,9 +109,26 @@ function createCharacterList(page = 0) {
     const totalPages = Math.max(
         1,
         Math.ceil(
-            allCharacters.length / CHARACTERS_PER_PAGE
+            allCharacters.length /
+            CHARACTERS_PER_PAGE
         )
     );
+
+    // ========================================
+    // GIỚI HẠN TRANG
+    // ========================================
+
+    page = Math.max(
+        0,
+        Math.min(
+            page,
+            totalPages - 1
+        )
+    );
+
+    // ========================================
+    // NHÂN VẬT CỦA TRANG
+    // ========================================
 
     const start =
         page * CHARACTERS_PER_PAGE;
@@ -53,9 +139,9 @@ function createCharacterList(page = 0) {
             start + CHARACTERS_PER_PAGE
         );
 
-    // ========================
+    // ========================================
     // EMBED
-    // ========================
+    // ========================================
 
     const embed = new EmbedBuilder()
         .setTitle("📋 THƯ VIỆN NHÂN VẬT")
@@ -64,11 +150,11 @@ function createCharacterList(page = 0) {
             `📄 Trang **${page + 1} / ${totalPages}**`
         );
 
-    // ========================
-    // NÚT NHÂN VẬT
-    // ========================
-
     const rows = [];
+
+    // ========================================
+    // BUTTON NHÂN VẬT
+    // ========================================
 
     for (
         let i = 0;
@@ -80,7 +166,10 @@ function createCharacterList(page = 0) {
             new ActionRowBuilder();
 
         const rowCharacters =
-            pageCharacters.slice(i, i + 3);
+            pageCharacters.slice(
+                i,
+                i + 3
+            );
 
         for (
             const [key, character]
@@ -88,34 +177,10 @@ function createCharacterList(page = 0) {
         ) {
 
             const button =
-                new ButtonBuilder()
-                    .setCustomId(
-                        `char_${key}`
-                    )
-                    .setLabel(
-                        character.name.slice(0, 80)
-                    )
-                    .setStyle(
-                        ButtonStyle.Secondary
-                    );
-
-            // ========================
-            // ICON RIÊNG
-            // ========================
-
-            if (
-                character.emoji &&
-                character.emoji.id
-            ) {
-
-                button.setEmoji({
-                    id: character.emoji.id,
-                    name:
-                        character.emoji.name ||
-                        character.name
-                });
-
-            }
+                createCharacterButton(
+                    key,
+                    character
+                );
 
             row.addComponents(button);
         }
@@ -123,27 +188,31 @@ function createCharacterList(page = 0) {
         rows.push(row);
     }
 
+    // ========================================
+    // NÚT PHÂN TRANG
+    // ========================================
 
-    // ========================
-    // NÚT CHUYỂN TRANG
-    // ========================
+    const navigationRow =
+        new ActionRowBuilder();
 
-    const previous =
+    const previousButton =
         new ButtonBuilder()
             .setCustomId(
                 `page_prev_${page}`
             )
-            .setLabel("Trang trước")
-            .setEmoji("◀️")
+            .setLabel("◀ Trang trước")
             .setStyle(
                 ButtonStyle.Primary
             )
-            .setDisabled(page === 0);
+            .setDisabled(
+                page === 0
+            );
 
-
-    const pageNumber =
+    const pageButton =
         new ButtonBuilder()
-            .setCustomId("page_number")
+            .setCustomId(
+                "page_number"
+            )
             .setLabel(
                 `${page + 1} / ${totalPages}`
             )
@@ -152,14 +221,12 @@ function createCharacterList(page = 0) {
             )
             .setDisabled(true);
 
-
-    const next =
+    const nextButton =
         new ButtonBuilder()
             .setCustomId(
                 `page_next_${page}`
             )
-            .setLabel("Trang sau")
-            .setEmoji("▶️")
+            .setLabel("Trang sau ▶")
             .setStyle(
                 ButtonStyle.Primary
             )
@@ -167,17 +234,17 @@ function createCharacterList(page = 0) {
                 page >= totalPages - 1
             );
 
+    navigationRow.addComponents(
+        previousButton,
+        pageButton,
+        nextButton
+    );
 
-    const navigation =
-        new ActionRowBuilder()
-            .addComponents(
-                previous,
-                pageNumber,
-                next
-            );
+    rows.push(navigationRow);
 
-    rows.push(navigation);
-
+    // ========================================
+    // TRẢ VỀ MESSAGE
+    // ========================================
 
     return {
         embeds: [embed],
@@ -185,49 +252,44 @@ function createCharacterList(page = 0) {
     };
 }
 
-
-// ========================
+// ========================================
 // BOT READY
-// ========================
+// ========================================
 
-client.once(
-    "clientReady",
-    () => {
+client.once("ready", () => {
 
-        console.log(
-            `✅ Đăng nhập: ${client.user.tag}`
-        );
+    console.log(
+        `✅ Bot đã đăng nhập: ${client.user.tag}`
+    );
 
-    }
-);
+    console.log(
+        `📚 Tổng nhân vật: ${Object.keys(characters).length}`
+    );
+});
 
-
-// ========================
-// XỬ LÝ !LIST + !TÊN
-// ========================
+// ========================================
+// MESSAGE COMMAND
+// ========================================
 
 client.on(
     "messageCreate",
     async (message) => {
 
-        if (message.author.bot)
+        // Không xử lý bot
+        if (message.author.bot) {
             return;
+        }
 
-        if (!message.content.startsWith("!"))
-            return;
+        const content =
+            message.content.trim();
 
-        const cmd =
-            message.content
-                .slice(1)
-                .trim()
-                .toLowerCase();
-
-
-        // ========================
+        // ========================================
         // !LIST
-        // ========================
+        // ========================================
 
-        if (cmd === "list") {
+        if (
+            content.toLowerCase() === "!list"
+        ) {
 
             try {
 
@@ -241,101 +303,133 @@ client.on(
                     "❌ Lỗi !list:",
                     error
                 );
-
             }
 
             return;
         }
 
+        // ========================================
+        // CHỈ NHẬN LỆNH !
+        // ========================================
 
-        // ========================
-        // ÍT NHẤT 3 KÝ TỰ
-        // ========================
-
-        if (cmd.length < 3) {
-
-            return message.reply(
-                "❌ Hãy nhập ít nhất **3 ký tự**."
-            );
-
+        if (
+            !content.startsWith("!")
+        ) {
+            return;
         }
 
+        // ========================================
+        // LẤY TỪ KHÓA
+        // ========================================
 
-        // ========================
+        const search =
+            content
+                .slice(1)
+                .trim()
+                .toLowerCase();
+
+        // Ít nhất 3 ký tự
+        if (
+            search.length < 3
+        ) {
+            return;
+        }
+
+        let foundCharacter = null;
+
+        // ========================================
         // TÌM NHÂN VẬT
-        // ========================
+        // ========================================
 
-        const matches =
-            Object.values(characters)
-                .filter(character => {
+        for (
+            const [key, character]
+            of Object.entries(characters)
+        ) {
 
-                    const names = [
-                        character.name,
-                        ...(character.aliases || [])
-                    ].map(name =>
-                        name.toLowerCase()
-                    );
+            const name =
+                String(character.name)
+                    .toLowerCase();
 
-                    return names.some(name =>
-                        name.startsWith(cmd)
-                    );
-
-                });
-
-
-        // ========================
-        // KHÔNG TÌM THẤY
-        // ========================
-
-        if (matches.length === 0) {
-
-            return message.reply(
-                "❌ Không tìm thấy nhân vật."
-            );
-
-        }
-
-
-        // ========================
-        // NHIỀU KẾT QUẢ
-        // ========================
-
-        if (matches.length > 1) {
-
-            const list =
-                matches
-                    .map(character =>
-                        `• ${character.name}`
+            const aliases =
+                Array.isArray(
+                    character.aliases
+                )
+                    ? character.aliases.map(
+                        alias =>
+                            String(alias)
+                                .toLowerCase()
                     )
-                    .join("\n");
+                    : [];
 
-            return message.reply(
-                `🔎 **Có nhiều nhân vật phù hợp:**\n\n` +
-                `${list}\n\n` +
-                `➡️ Hãy nhập thêm vài ký tự.`
-            );
+            const characterKey =
+                String(key)
+                    .toLowerCase();
 
+            // ========================================
+            // TÌM THEO TÊN
+            // ========================================
+
+            if (
+                name.startsWith(search)
+            ) {
+
+                foundCharacter =
+                    character;
+
+                break;
+            }
+
+            // ========================================
+            // TÌM THEO ALIAS
+            // ========================================
+
+            if (
+                aliases.some(
+                    alias =>
+                        alias.startsWith(
+                            search
+                        )
+                )
+            ) {
+
+                foundCharacter =
+                    character;
+
+                break;
+            }
+
+            // ========================================
+            // TÌM THEO KEY
+            // ========================================
+
+            if (
+                characterKey.startsWith(
+                    search
+                )
+            ) {
+
+                foundCharacter =
+                    character;
+
+                break;
+            }
         }
 
+        // Không tìm thấy
+        if (!foundCharacter) {
+            return;
+        }
 
-        // ========================
+        // ========================================
         // GỬI ẢNH
-        // ========================
-
-        const character =
-            matches[0];
+        // ========================================
 
         try {
 
             await message.channel.send({
-
-                content:
-                    `**${character.name}**`,
-
                 files: [
-                    character.image
+                    foundCharacter.image
                 ]
-
             });
 
         } catch (error) {
@@ -344,167 +438,147 @@ client.on(
                 "❌ Lỗi gửi ảnh:",
                 error
             );
-
-            await message.reply(
-                `❌ Không thể gửi ảnh **${character.name}**.`
-            );
-
         }
-
     }
 );
 
-
-// ========================
-// XỬ LÝ BUTTON
-// ========================
+// ========================================
+// BUTTON INTERACTION
+// ========================================
 
 client.on(
     "interactionCreate",
     async (interaction) => {
 
-        if (!interaction.isButton())
-            return;
-
-
-        // ========================
-        // BẤM NHÂN VẬT
-        // ========================
-
-        if (
-            interaction.customId
-                .startsWith("char_")
-        ) {
-
-            const key =
-                interaction.customId
-                    .replace("char_", "");
-
-            const character =
-                characters[key];
-
-
-            if (!character) {
-
-                return interaction.reply({
-
-                    content:
-                        "❌ Không tìm thấy nhân vật. Dùng lệch !list để mở thư viện",
-
-                    ephemeral: true
-
-                });
-
-            }
-
-
-            try {
-
-                await interaction.reply({
-
-                    content:
-                        `**${character.name}**`,
-
-                    files: [
-                        character.image
-                    ]
-
-                });
-
-            } catch (error) {
-
-                console.error(
-                    "❌ Lỗi gửi ảnh:",
-                    error
-                );
-
-                if (
-                    !interaction.replied
-                ) {
-
-                    await interaction.reply({
-
-                        content:
-                            `❌ Không thể gửi ảnh **${character.name}**.`,
-
-                        ephemeral: true
-
-                    });
-
-                }
-
-            }
-
+        // Chỉ xử lý button
+        if (!interaction.isButton()) {
             return;
         }
 
-
-        // ========================
-        // CHUYỂN TRANG
-        // ========================
+        // ========================================
+        // NÚT TRANG TRƯỚC / TRANG SAU
+        // ========================================
 
         if (
-            interaction.customId
-                .startsWith("page_prev_") ||
-
-            interaction.customId
-                .startsWith("page_next_")
+            interaction.customId.startsWith(
+                "page_prev_"
+            ) ||
+            interaction.customId.startsWith(
+                "page_next_"
+            )
         ) {
 
-            const currentPage =
-                Number(
-                    interaction.customId
-                        .split("_")
-                        .pop()
-                );
-
-            let newPage =
-                currentPage;
-
+            // ========================================
+            // CHỐNG ACK 2 LẦN
+            // ========================================
 
             if (
-                interaction.customId
-                    .startsWith("page_prev_")
+                interaction.replied ||
+                interaction.deferred
             ) {
-
-                newPage--;
-
+                return;
             }
-
-
-            if (
-                interaction.customId
-                    .startsWith("page_next_")
-            ) {
-
-                newPage++;
-
-            }
-
-
-            const totalPages =
-                Math.max(
-                    1,
-                    Math.ceil(
-                        Object.keys(characters).length /
-                        CHARACTERS_PER_PAGE
-                    )
-                );
-
-
-            if (newPage < 0)
-                newPage = 0;
-
-            if (newPage >= totalPages)
-                newPage = totalPages - 1;
-
 
             try {
 
-                await interaction.update(
+                // ========================================
+                // LẤY TRANG HIỆN TẠI
+                // ========================================
+
+                const parts =
+                    interaction.customId
+                        .split("_");
+
+                const currentPage =
+                    Number(
+                        parts[
+                            parts.length - 1
+                        ]
+                    );
+
+                let newPage =
+                    currentPage;
+
+                // ========================================
+                // TRANG TRƯỚC
+                // ========================================
+
+                if (
+                    interaction.customId
+                        .startsWith(
+                            "page_prev_"
+                        )
+                ) {
+
+                    newPage--;
+                }
+
+                // ========================================
+                // TRANG SAU
+                // ========================================
+
+                if (
+                    interaction.customId
+                        .startsWith(
+                            "page_next_"
+                        )
+                ) {
+
+                    newPage++;
+                }
+
+                // ========================================
+                // TÍNH TỔNG TRANG
+                // ========================================
+
+                const totalPages =
+                    Math.max(
+                        1,
+                        Math.ceil(
+                            Object.keys(
+                                characters
+                            ).length /
+                            CHARACTERS_PER_PAGE
+                        )
+                    );
+
+                // ========================================
+                // GIỚI HẠN
+                // ========================================
+
+                newPage =
+                    Math.max(
+                        0,
+                        Math.min(
+                            newPage,
+                            totalPages - 1
+                        )
+                    );
+
+                // ========================================
+                // ACK INTERACTION
+                // ========================================
+
+                await interaction.deferUpdate();
+
+                // ========================================
+                // TẠO LẠI TOÀN BỘ COMPONENT
+                //
+                // Emoji sẽ được đọc lại từ
+                // characters.json ở đây.
+                // ========================================
+
+                const pageData =
                     createCharacterList(
                         newPage
-                    )
+                    );
+
+                // ========================================
+                // EDIT MESSAGE
+                // ========================================
+
+                await interaction.message.edit(
+                    pageData
                 );
 
             } catch (error) {
@@ -513,19 +587,108 @@ client.on(
                     "❌ Lỗi chuyển trang:",
                     error
                 );
-
             }
 
             return;
         }
 
+        // ========================================
+        // NÚT NHÂN VẬT
+        // ========================================
+
+        if (
+            interaction.customId.startsWith(
+                "char_"
+            )
+        ) {
+
+            // ========================================
+            // CHỐNG ACK 2 LẦN
+            // ========================================
+
+            if (
+                interaction.replied ||
+                interaction.deferred
+            ) {
+                return;
+            }
+
+            // ========================================
+            // LẤY KEY
+            // ========================================
+
+            const key =
+                interaction.customId
+                    .substring(5);
+
+            const character =
+                characters[key];
+
+            // ========================================
+            // KHÔNG TÌM THẤY
+            // ========================================
+
+            if (!character) {
+
+                try {
+
+                    await interaction.reply({
+                        content:
+                            "❌ Không tìm thấy nhân vật.",
+                        ephemeral: true
+                    });
+
+                } catch (error) {
+
+                    console.error(
+                        "❌ Lỗi interaction:",
+                        error
+                    );
+                }
+
+                return;
+            }
+
+            // ========================================
+            // LẤY TÊN NGƯỜI BẤM
+            // ========================================
+
+            const username =
+                interaction.member
+                    ?.displayName ||
+                interaction.user.globalName ||
+                interaction.user.username;
+
+            // ========================================
+            // GỬI ẢNH
+            // ========================================
+
+            try {
+
+                await interaction.reply({
+                    content:
+                        `👤 **${username}** đã chọn **${character.name}**`,
+                    files: [
+                        character.image
+                    ]
+                });
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Lỗi nút nhân vật:",
+                    error
+                );
+            }
+
+            return;
+        }
     }
 );
 
-
-// ========================
-// ĐĂNG NHẬP
-// ========================
+// ========================================
+// LOGIN
+// ========================================
 
 client.login(
     process.env.TOKEN
