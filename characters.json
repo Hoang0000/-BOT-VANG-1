@@ -1,7 +1,11 @@
 {
   "akekuri": {
+  "name": "Akekuri",
+  "image": "./images/Akekuri.jpg",
+  "emoji": {
     "name": "Akekuri",
-    "image": "./images/Akekuri.jpg"
+    "id": "1547846367387455602"
+  }
   },
   "alesh": {
     "name": "Alesh",

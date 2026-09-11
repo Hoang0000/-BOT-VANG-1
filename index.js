@@ -23,9 +23,9 @@ const client = new Client({
 // CẤU HÌNH
 // ========================
 
-// 3 cột x 4 hàng = 12 nhân vật
-// + 1 hàng nút chuyển trang
-// = 5 ActionRow, đúng giới hạn Discord
+// 12 nhân vật / trang
+// 3 nút mỗi hàng × 4 hàng
+// + 1 hàng chuyển trang = 5 hàng
 const CHARACTERS_PER_PAGE = 12;
 
 
@@ -37,51 +37,85 @@ function createCharacterList(page = 0) {
 
     const allCharacters = Object.entries(characters);
 
-    const totalPages = Math.ceil(
-        allCharacters.length / CHARACTERS_PER_PAGE
+    const totalPages = Math.max(
+        1,
+        Math.ceil(
+            allCharacters.length / CHARACTERS_PER_PAGE
+        )
     );
 
-    const start = page * CHARACTERS_PER_PAGE;
+    const start =
+        page * CHARACTERS_PER_PAGE;
 
-    const pageCharacters = allCharacters.slice(
-        start,
-        start + CHARACTERS_PER_PAGE
-    );
+    const pageCharacters =
+        allCharacters.slice(
+            start,
+            start + CHARACTERS_PER_PAGE
+        );
 
     // ========================
-    // Embed
+    // EMBED
     // ========================
 
     const embed = new EmbedBuilder()
         .setTitle("📋 THƯ VIỆN NHÂN VẬT")
         .setDescription(
-            "🖼️ **Bấm vào tên nhân vật để xem ảnh**\n\n" +
+            "Chọn nhân vật bên dưới để xem ảnh.\n\n" +
             `📄 Trang **${page + 1} / ${totalPages}**`
         );
 
     // ========================
-    // Tạo 4 hàng
-    // Mỗi hàng 3 nút
+    // NÚT NHÂN VẬT
     // ========================
 
     const rows = [];
 
-    for (let i = 0; i < pageCharacters.length; i += 3) {
+    for (
+        let i = 0;
+        i < pageCharacters.length;
+        i += 3
+    ) {
 
-        const row = new ActionRowBuilder();
+        const row =
+            new ActionRowBuilder();
 
-        const rowCharacters = pageCharacters.slice(
-            i,
-            i + 3
-        );
+        const rowCharacters =
+            pageCharacters.slice(i, i + 3);
 
-        for (const [key, character] of rowCharacters) {
+        for (
+            const [key, character]
+            of rowCharacters
+        ) {
 
-            const button = new ButtonBuilder()
-                .setCustomId(`char_${key}`)
-                .setLabel(character.name.slice(0, 80))
-                .setEmoji("🖼️")
-                .setStyle(ButtonStyle.Secondary);
+            const button =
+                new ButtonBuilder()
+                    .setCustomId(
+                        `char_${key}`
+                    )
+                    .setLabel(
+                        character.name.slice(0, 80)
+                    )
+                    .setStyle(
+                        ButtonStyle.Secondary
+                    );
+
+            // ========================
+            // ICON RIÊNG
+            // ========================
+
+            if (
+                character.emoji &&
+                character.emoji.id
+            ) {
+
+                button.setEmoji({
+                    id: character.emoji.id,
+                    name:
+                        character.emoji.name ||
+                        character.name
+                });
+
+            }
 
             row.addComponents(button);
         }
@@ -89,39 +123,61 @@ function createCharacterList(page = 0) {
         rows.push(row);
     }
 
+
     // ========================
     // NÚT CHUYỂN TRANG
     // ========================
 
-    const previous = new ButtonBuilder()
-        .setCustomId(`page_prev_${page}`)
-        .setLabel("Trang trước")
-        .setEmoji("◀️")
-        .setStyle(ButtonStyle.Primary)
-        .setDisabled(page === 0);
+    const previous =
+        new ButtonBuilder()
+            .setCustomId(
+                `page_prev_${page}`
+            )
+            .setLabel("Trang trước")
+            .setEmoji("◀️")
+            .setStyle(
+                ButtonStyle.Primary
+            )
+            .setDisabled(page === 0);
 
-    const pageNumber = new ButtonBuilder()
-        .setCustomId("page_number")
-        .setLabel(`${page + 1} / ${totalPages}`)
-        .setStyle(ButtonStyle.Secondary)
-        .setDisabled(true);
 
-    const next = new ButtonBuilder()
-        .setCustomId(`page_next_${page}`)
-        .setLabel("Trang sau")
-        .setEmoji("▶️")
-        .setStyle(ButtonStyle.Primary)
-        .setDisabled(page >= totalPages - 1);
+    const pageNumber =
+        new ButtonBuilder()
+            .setCustomId("page_number")
+            .setLabel(
+                `${page + 1} / ${totalPages}`
+            )
+            .setStyle(
+                ButtonStyle.Secondary
+            )
+            .setDisabled(true);
 
-    const navigation = new ActionRowBuilder()
-        .addComponents(
-            previous,
-            pageNumber,
-            next
-        );
 
-    // Thêm hàng chuyển trang
+    const next =
+        new ButtonBuilder()
+            .setCustomId(
+                `page_next_${page}`
+            )
+            .setLabel("Trang sau")
+            .setEmoji("▶️")
+            .setStyle(
+                ButtonStyle.Primary
+            )
+            .setDisabled(
+                page >= totalPages - 1
+            );
+
+
+    const navigation =
+        new ActionRowBuilder()
+            .addComponents(
+                previous,
+                pageNumber,
+                next
+            );
+
     rows.push(navigation);
+
 
     return {
         embeds: [embed],
@@ -131,203 +187,150 @@ function createCharacterList(page = 0) {
 
 
 // ========================
-// BOT SẴN SÀNG
+// BOT READY
 // ========================
 
-client.once("clientReady", () => {
+client.once(
+    "clientReady",
+    () => {
 
-    console.log(
-        `✅ Đăng nhập: ${client.user.tag}`
-    );
+        console.log(
+            `✅ Đăng nhập: ${client.user.tag}`
+        );
 
-});
+    }
+);
 
 
 // ========================
-// XỬ LÝ TIN NHẮN
+// XỬ LÝ !LIST + !TÊN
 // ========================
 
-client.on("messageCreate", async (message) => {
+client.on(
+    "messageCreate",
+    async (message) => {
 
-    // Bỏ qua bot
-    if (message.author.bot) return;
+        if (message.author.bot)
+            return;
 
-    // Chỉ nhận lệnh !
-    if (!message.content.startsWith("!")) return;
+        if (!message.content.startsWith("!"))
+            return;
 
-    const cmd = message.content
-        .slice(1)
-        .trim()
-        .toLowerCase();
+        const cmd =
+            message.content
+                .slice(1)
+                .trim()
+                .toLowerCase();
 
 
-    // ========================
-    // !list
-    // ========================
+        // ========================
+        // !LIST
+        // ========================
 
-    if (cmd === "list") {
+        if (cmd === "list") {
 
-        try {
+            try {
 
-            await message.channel.send(
-                createCharacterList(0)
-            );
+                await message.channel.send(
+                    createCharacterList(0)
+                );
 
-        } catch (error) {
+            } catch (error) {
 
-            console.error(
-                "❌ Lỗi !list:",
-                error
+                console.error(
+                    "❌ Lỗi !list:",
+                    error
+                );
+
+            }
+
+            return;
+        }
+
+
+        // ========================
+        // ÍT NHẤT 3 KÝ TỰ
+        // ========================
+
+        if (cmd.length < 3) {
+
+            return message.reply(
+                "❌ Hãy nhập ít nhất **3 ký tự**."
             );
 
         }
 
-        return;
-    }
+
+        // ========================
+        // TÌM NHÂN VẬT
+        // ========================
+
+        const matches =
+            Object.values(characters)
+                .filter(character => {
+
+                    const names = [
+                        character.name,
+                        ...(character.aliases || [])
+                    ].map(name =>
+                        name.toLowerCase()
+                    );
+
+                    return names.some(name =>
+                        name.startsWith(cmd)
+                    );
+
+                });
 
 
-    // ========================
-    // ÍT NHẤT 3 KÝ TỰ
-    // ========================
+        // ========================
+        // KHÔNG TÌM THẤY
+        // ========================
 
-    if (cmd.length < 3) {
+        if (matches.length === 0) {
 
-        return message.reply(
-            "❌ Hãy nhập ít nhất **3 ký tự**."
-        );
-
-    }
-
-
-    // ========================
-    // TÌM NHÂN VẬT
-    // ========================
-
-    const matches = Object.values(characters)
-        .filter(character => {
-
-            const names = [
-                character.name,
-                ...(character.aliases || [])
-            ].map(name =>
-                name.toLowerCase()
+            return message.reply(
+                "❌ Không tìm thấy nhân vật."
             );
-
-            return names.some(name =>
-                name.startsWith(cmd)
-            );
-
-        });
-
-
-    // Không tìm thấy
-    if (matches.length === 0) {
-
-        return message.reply(
-            "❌ Không tìm thấy nhân vật."
-        );
-
-    }
-
-
-    // ========================
-    // NHIỀU KẾT QUẢ
-    // ========================
-
-    if (matches.length > 1) {
-
-        const list = matches
-            .map(character =>
-                `• ${character.name}`
-            )
-            .join("\n");
-
-        return message.reply(
-            `🔎 **Có nhiều nhân vật phù hợp:**\n\n` +
-            `${list}\n\n` +
-            `➡️ Hãy nhập thêm vài ký tự.`
-        );
-
-    }
-
-
-    // ========================
-    // GỬI ẢNH
-    // ========================
-
-    const character = matches[0];
-
-    try {
-
-        await message.channel.send({
-
-            content:
-                `🖼️ **${character.name}**`,
-
-            files: [
-                character.image
-            ]
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "❌ Lỗi gửi ảnh:",
-            error
-        );
-
-        await message.reply(
-            `❌ Không thể gửi ảnh **${character.name}**.`
-        );
-
-    }
-
-});
-
-
-// ========================
-// XỬ LÝ NÚT BẤM
-// ========================
-
-client.on("interactionCreate", async (interaction) => {
-
-    if (!interaction.isButton()) return;
-
-
-    // ========================
-    // BẤM NHÂN VẬT
-    // ========================
-
-    if (
-        interaction.customId.startsWith("char_")
-    ) {
-
-        const key = interaction.customId
-            .replace("char_", "");
-
-        const character = characters[key];
-
-        if (!character) {
-
-            return interaction.reply({
-
-                content:
-                    "❌ Không tìm thấy nhân vật.",
-
-                ephemeral: true
-
-            });
 
         }
 
 
+        // ========================
+        // NHIỀU KẾT QUẢ
+        // ========================
+
+        if (matches.length > 1) {
+
+            const list =
+                matches
+                    .map(character =>
+                        `• ${character.name}`
+                    )
+                    .join("\n");
+
+            return message.reply(
+                `🔎 **Có nhiều nhân vật phù hợp:**\n\n` +
+                `${list}\n\n` +
+                `➡️ Hãy nhập thêm vài ký tự.`
+            );
+
+        }
+
+
+        // ========================
+        // GỬI ẢNH
+        // ========================
+
+        const character =
+            matches[0];
+
         try {
 
-            await interaction.reply({
+            await message.channel.send({
 
                 content:
-                    `🖼️ **${character.name}**`,
+                    `**${character.name}**`,
 
                 files: [
                     character.image
@@ -342,12 +345,51 @@ client.on("interactionCreate", async (interaction) => {
                 error
             );
 
-            if (!interaction.replied) {
+            await message.reply(
+                `❌ Không thể gửi ảnh **${character.name}**.`
+            );
 
-                await interaction.reply({
+        }
+
+    }
+);
+
+
+// ========================
+// XỬ LÝ BUTTON
+// ========================
+
+client.on(
+    "interactionCreate",
+    async (interaction) => {
+
+        if (!interaction.isButton())
+            return;
+
+
+        // ========================
+        // BẤM NHÂN VẬT
+        // ========================
+
+        if (
+            interaction.customId
+                .startsWith("char_")
+        ) {
+
+            const key =
+                interaction.customId
+                    .replace("char_", "");
+
+            const character =
+                characters[key];
+
+
+            if (!character) {
+
+                return interaction.reply({
 
                     content:
-                        `❌ Không thể gửi ảnh **${character.name}**.`,
+                        "❌ Không tìm thấy nhân vật. Dùng lệch !list để mở thư viện",
 
                     ephemeral: true
 
@@ -355,93 +397,136 @@ client.on("interactionCreate", async (interaction) => {
 
             }
 
+
+            try {
+
+                await interaction.reply({
+
+                    content:
+                        `**${character.name}**`,
+
+                    files: [
+                        character.image
+                    ]
+
+                });
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Lỗi gửi ảnh:",
+                    error
+                );
+
+                if (
+                    !interaction.replied
+                ) {
+
+                    await interaction.reply({
+
+                        content:
+                            `❌ Không thể gửi ảnh **${character.name}**.`,
+
+                        ephemeral: true
+
+                    });
+
+                }
+
+            }
+
+            return;
         }
 
-        return;
-    }
 
+        // ========================
+        // CHUYỂN TRANG
+        // ========================
 
-    // ========================
-    // CHUYỂN TRANG
-    // ========================
-
-    if (
-        interaction.customId.startsWith("page_prev_") ||
-        interaction.customId.startsWith("page_next_")
-    ) {
-
-        const currentPage = Number(
+        if (
             interaction.customId
-                .split("_")
-                .pop()
-        );
+                .startsWith("page_prev_") ||
 
-        let newPage = currentPage;
-
-
-        // Trang trước
-        if (
-            interaction.customId.startsWith(
-                "page_prev_"
-            )
+            interaction.customId
+                .startsWith("page_next_")
         ) {
 
-            newPage--;
+            const currentPage =
+                Number(
+                    interaction.customId
+                        .split("_")
+                        .pop()
+                );
 
+            let newPage =
+                currentPage;
+
+
+            if (
+                interaction.customId
+                    .startsWith("page_prev_")
+            ) {
+
+                newPage--;
+
+            }
+
+
+            if (
+                interaction.customId
+                    .startsWith("page_next_")
+            ) {
+
+                newPage++;
+
+            }
+
+
+            const totalPages =
+                Math.max(
+                    1,
+                    Math.ceil(
+                        Object.keys(characters).length /
+                        CHARACTERS_PER_PAGE
+                    )
+                );
+
+
+            if (newPage < 0)
+                newPage = 0;
+
+            if (newPage >= totalPages)
+                newPage = totalPages - 1;
+
+
+            try {
+
+                await interaction.update(
+                    createCharacterList(
+                        newPage
+                    )
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Lỗi chuyển trang:",
+                    error
+                );
+
+            }
+
+            return;
         }
 
-
-        // Trang sau
-        if (
-            interaction.customId.startsWith(
-                "page_next_"
-            )
-        ) {
-
-            newPage++;
-
-        }
-
-
-        const totalPages = Math.ceil(
-            Object.keys(characters).length /
-            CHARACTERS_PER_PAGE
-        );
-
-
-        // Giới hạn trang
-        if (newPage < 0) {
-            newPage = 0;
-        }
-
-        if (newPage >= totalPages) {
-            newPage = totalPages - 1;
-        }
-
-
-        try {
-
-            await interaction.update(
-                createCharacterList(newPage)
-            );
-
-        } catch (error) {
-
-            console.error(
-                "❌ Lỗi chuyển trang:",
-                error
-            );
-
-        }
-
-        return;
     }
-
-});
+);
 
 
 // ========================
 // ĐĂNG NHẬP
 // ========================
 
-client.login(process.env.TOKEN);
+client.login(
+    process.env.TOKEN
+);
