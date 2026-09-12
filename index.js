@@ -39,16 +39,21 @@ function getCharacterEmoji(character) {
         return null;
     }
 
+    // emoji dạng:
     // "emoji": "123456789"
+
     if (typeof character.emoji === "string") {
+
         return {
             id: String(character.emoji)
         };
     }
 
+    // emoji dạng:
     // "emoji": {
-    //   "name": "Akekuri",
-    //   "id": "123456789"
+    //     "name": "Akekuri",
+    //     "id": "123456789",
+    //     "animated": false
     // }
 
     if (
@@ -85,14 +90,20 @@ function createCharacterButton(key, character) {
     const emoji = getCharacterEmoji(character);
 
     if (emoji) {
-        button.setEmoji(emoji);
+        try {
+            button.setEmoji(emoji);
+        } catch (error) {
+            console.log(
+                `⚠️ Emoji lỗi của ${character.name}`
+            );
+        }
     }
 
     return button;
 }
 
 // ========================================
-// TẠO DANH SÁCH
+// TẠO DANH SÁCH NHÂN VẬT
 // ========================================
 
 function createCharacterList(page = 0) {
@@ -109,7 +120,7 @@ function createCharacterList(page = 0) {
             )
         );
 
-    // Chặn page vượt giới hạn
+    // Chặn page
     page = Math.max(
         0,
         Math.min(
@@ -142,7 +153,7 @@ function createCharacterList(page = 0) {
     const rows = [];
 
     // ========================================
-    // 12 NHÂN VẬT
+    // BUTTON NHÂN VẬT
     // 3 BUTTON / HÀNG
     // ========================================
 
@@ -198,7 +209,7 @@ function createCharacterList(page = 0) {
     const pageButton =
         new ButtonBuilder()
             .setCustomId(
-                "page_number"
+                `page_number_${page}`
             )
             .setLabel(
                 `${page + 1} / ${totalPages}`
@@ -266,11 +277,9 @@ client.on(
     "messageCreate",
     async (message) => {
 
+        // Không xử lý bot
         if (message.author.bot) {
             return;
-        }
-        if (message.content.toLowerCase() === "!list") {
-        await sendCharacterList(message, 1);
         }
 
         const content =
@@ -317,8 +326,10 @@ client.on(
                 .trim()
                 .toLowerCase();
 
-        // Ít nhất 3 ký tự
-        if (search.length < 3) {
+        // Tối thiểu 3 ký tự
+        if (
+            search.length < 3
+        ) {
             return;
         }
 
@@ -352,7 +363,7 @@ client.on(
                     )
                     : [];
 
-            // Tên
+            // Tìm theo tên
             if (
                 name.startsWith(search)
             ) {
@@ -363,7 +374,7 @@ client.on(
                 break;
             }
 
-            // Alias
+            // Tìm theo alias
             if (
                 aliases.some(
                     alias =>
@@ -377,7 +388,7 @@ client.on(
                 break;
             }
 
-            // Key
+            // Tìm theo key
             if (
                 characterKey.startsWith(search)
             ) {
@@ -389,6 +400,7 @@ client.on(
             }
         }
 
+        // Không tìm thấy
         if (!foundCharacter) {
             return;
         }
@@ -431,7 +443,7 @@ client.on(
             interaction.customId;
 
         // ========================================
-        // NÚT CHUYỂN TRANG
+        // CHUYỂN TRANG
         // ========================================
 
         if (
@@ -439,22 +451,16 @@ client.on(
             customId.startsWith("page_next_")
         ) {
 
-            /*
-             * QUAN TRỌNG:
-             *
-             * Không dùng deferUpdate().
-             *
-             * Chỉ gọi interaction.update()
-             * đúng 1 lần.
-             *
-             * Đây là nguyên nhân chính gây
-             * lỗi 40060 trong code cũ.
-             */
-
             try {
 
                 // ========================================
-                // LẤY TRANG HIỆN TẠI
+                // ACKNOWLEDGE NGAY
+                // ========================================
+
+                await interaction.deferUpdate();
+
+                // ========================================
+                // LẤY PAGE HIỆN TẠI
                 // ========================================
 
                 const parts =
@@ -519,7 +525,7 @@ client.on(
                     );
 
                 // ========================================
-                // GIỚI HẠN
+                // GIỚI HẠN PAGE
                 // ========================================
 
                 newPage =
@@ -532,13 +538,21 @@ client.on(
                     );
 
                 // ========================================
-                // UPDATE TRỰC TIẾP
+                // CẬP NHẬT MESSAGE
                 // ========================================
 
-                await interaction.update(
+                await interaction.message.edit(
                     createCharacterList(
                         newPage
                     )
+                );
+
+                console.log(
+                    `📄 Chuyển trang: ${
+                        currentPage + 1
+                    } → ${
+                        newPage + 1
+                    }`
                 );
 
             } catch (error) {
@@ -553,7 +567,7 @@ client.on(
         }
 
         // ========================================
-        // NÚT NHÂN VẬT
+        // BUTTON NHÂN VẬT
         // ========================================
 
         if (
@@ -578,7 +592,7 @@ client.on(
                         await interaction.reply({
                             content:
                                 "❌ Không tìm thấy nhân vật.",
-                            flags: 64
+                            ephemeral: true
                         });
                     }
 
@@ -619,6 +633,21 @@ client.on(
 
             return;
         }
+    }
+);
+
+// ========================================
+// ERROR HANDLER
+// ========================================
+
+client.on(
+    "error",
+    (error) => {
+
+        console.error(
+            "❌ Discord Client Error:",
+            error
+        );
     }
 );
 
