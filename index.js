@@ -39,33 +39,30 @@ function getCharacterEmoji(character) {
         return null;
     }
 
-    // Nếu emoji được lưu trực tiếp:
-    //
-    // "emoji": "123456789012345678"
-    //
+    // "emoji": "123456789"
     if (typeof character.emoji === "string") {
-
         return {
             id: String(character.emoji)
         };
     }
 
-    // Nếu emoji được lưu:
-    //
     // "emoji": {
-    //     "name": "Akekuri",
-    //     "id": "123456789012345678"
+    //   "name": "Akekuri",
+    //   "id": "123456789"
     // }
-    //
 
-    if (character.emoji.id) {
+    if (
+        typeof character.emoji === "object" &&
+        character.emoji.id
+    ) {
 
         return {
             id: String(character.emoji.id),
-            name: String(
-                character.emoji.name ||
-                "emoji"
-            )
+            name: character.emoji.name
+                ? String(character.emoji.name)
+                : undefined,
+            animated:
+                character.emoji.animated === true
         };
     }
 
@@ -85,10 +82,6 @@ function createCharacterButton(key, character) {
         )
         .setStyle(ButtonStyle.Secondary);
 
-    // ========================================
-    // GẮN EMOJI
-    // ========================================
-
     const emoji = getCharacterEmoji(character);
 
     if (emoji) {
@@ -99,25 +92,24 @@ function createCharacterButton(key, character) {
 }
 
 // ========================================
-// TẠO DANH SÁCH NHÂN VẬT
+// TẠO DANH SÁCH
 // ========================================
 
 function createCharacterList(page = 0) {
 
-    const allCharacters = Object.entries(characters);
+    const allCharacters =
+        Object.entries(characters);
 
-    const totalPages = Math.max(
-        1,
-        Math.ceil(
-            allCharacters.length /
-            CHARACTERS_PER_PAGE
-        )
-    );
+    const totalPages =
+        Math.max(
+            1,
+            Math.ceil(
+                allCharacters.length /
+                CHARACTERS_PER_PAGE
+            )
+        );
 
-    // ========================================
-    // GIỚI HẠN TRANG
-    // ========================================
-
+    // Chặn page vượt giới hạn
     page = Math.max(
         0,
         Math.min(
@@ -125,10 +117,6 @@ function createCharacterList(page = 0) {
             totalPages - 1
         )
     );
-
-    // ========================================
-    // NHÂN VẬT CỦA TRANG
-    // ========================================
 
     const start =
         page * CHARACTERS_PER_PAGE;
@@ -143,17 +131,19 @@ function createCharacterList(page = 0) {
     // EMBED
     // ========================================
 
-    const embed = new EmbedBuilder()
-        .setTitle("📋 THƯ VIỆN NHÂN VẬT")
-        .setDescription(
-            "Chọn nhân vật bên dưới để xem ảnh.\n\n" +
-            `📄 Trang **${page + 1} / ${totalPages}**`
-        );
+    const embed =
+        new EmbedBuilder()
+            .setTitle("📋 THƯ VIỆN NHÂN VẬT")
+            .setDescription(
+                "Chọn nhân vật bên dưới để xem ảnh.\n\n" +
+                `📄 Trang **${page + 1} / ${totalPages}**`
+            );
 
     const rows = [];
 
     // ========================================
-    // BUTTON NHÂN VẬT
+    // 12 NHÂN VẬT
+    // 3 BUTTON / HÀNG
     // ========================================
 
     for (
@@ -176,31 +166,28 @@ function createCharacterList(page = 0) {
             of rowCharacters
         ) {
 
-            const button =
+            row.addComponents(
                 createCharacterButton(
                     key,
                     character
-                );
-
-            row.addComponents(button);
+                )
+            );
         }
 
         rows.push(row);
     }
 
     // ========================================
-    // NÚT PHÂN TRANG
+    // NÚT CHUYỂN TRANG
     // ========================================
-
-    const navigationRow =
-        new ActionRowBuilder();
 
     const previousButton =
         new ButtonBuilder()
             .setCustomId(
                 `page_prev_${page}`
             )
-            .setLabel("◀ Trang trước")
+            .setLabel("Trang trước")
+            .setEmoji("◀️")
             .setStyle(
                 ButtonStyle.Primary
             )
@@ -226,7 +213,8 @@ function createCharacterList(page = 0) {
             .setCustomId(
                 `page_next_${page}`
             )
-            .setLabel("Trang sau ▶")
+            .setLabel("Trang sau")
+            .setEmoji("▶️")
             .setStyle(
                 ButtonStyle.Primary
             )
@@ -234,17 +222,15 @@ function createCharacterList(page = 0) {
                 page >= totalPages - 1
             );
 
-    navigationRow.addComponents(
-        previousButton,
-        pageButton,
-        nextButton
-    );
+    const navigationRow =
+        new ActionRowBuilder()
+            .addComponents(
+                previousButton,
+                pageButton,
+                nextButton
+            );
 
     rows.push(navigationRow);
-
-    // ========================================
-    // TRẢ VỀ MESSAGE
-    // ========================================
 
     return {
         embeds: [embed],
@@ -253,19 +239,24 @@ function createCharacterList(page = 0) {
 }
 
 // ========================================
-// BOT READY
+// READY
 // ========================================
 
-client.once("ready", () => {
+client.once(
+    "clientReady",
+    () => {
 
-    console.log(
-        `✅ Bot đã đăng nhập: ${client.user.tag}`
-    );
+        console.log(
+            `✅ Bot đã đăng nhập: ${client.user.tag}`
+        );
 
-    console.log(
-        `📚 Tổng nhân vật: ${Object.keys(characters).length}`
-    );
-});
+        console.log(
+            `📚 Tổng nhân vật: ${
+                Object.keys(characters).length
+            }`
+        );
+    }
+);
 
 // ========================================
 // MESSAGE COMMAND
@@ -275,9 +266,11 @@ client.on(
     "messageCreate",
     async (message) => {
 
-        // Không xử lý bot
         if (message.author.bot) {
             return;
+        }
+        if (message.content.toLowerCase() === "!list") {
+        await sendCharacterList(message, 1);
         }
 
         const content =
@@ -309,7 +302,7 @@ client.on(
         }
 
         // ========================================
-        // CHỈ NHẬN LỆNH !
+        // CÁC LỆNH KHÁC PHẢI BẮT ĐẦU !
         // ========================================
 
         if (
@@ -318,10 +311,6 @@ client.on(
             return;
         }
 
-        // ========================================
-        // LẤY TỪ KHÓA
-        // ========================================
-
         const search =
             content
                 .slice(1)
@@ -329,9 +318,7 @@ client.on(
                 .toLowerCase();
 
         // Ít nhất 3 ký tự
-        if (
-            search.length < 3
-        ) {
+        if (search.length < 3) {
             return;
         }
 
@@ -350,6 +337,10 @@ client.on(
                 String(character.name)
                     .toLowerCase();
 
+            const characterKey =
+                String(key)
+                    .toLowerCase();
+
             const aliases =
                 Array.isArray(
                     character.aliases
@@ -361,14 +352,7 @@ client.on(
                     )
                     : [];
 
-            const characterKey =
-                String(key)
-                    .toLowerCase();
-
-            // ========================================
-            // TÌM THEO TÊN
-            // ========================================
-
+            // Tên
             if (
                 name.startsWith(search)
             ) {
@@ -379,16 +363,11 @@ client.on(
                 break;
             }
 
-            // ========================================
-            // TÌM THEO ALIAS
-            // ========================================
-
+            // Alias
             if (
                 aliases.some(
                     alias =>
-                        alias.startsWith(
-                            search
-                        )
+                        alias.startsWith(search)
                 )
             ) {
 
@@ -398,14 +377,9 @@ client.on(
                 break;
             }
 
-            // ========================================
-            // TÌM THEO KEY
-            // ========================================
-
+            // Key
             if (
-                characterKey.startsWith(
-                    search
-                )
+                characterKey.startsWith(search)
             ) {
 
                 foundCharacter =
@@ -415,7 +389,6 @@ client.on(
             }
         }
 
-        // Không tìm thấy
         if (!foundCharacter) {
             return;
         }
@@ -450,34 +423,33 @@ client.on(
     "interactionCreate",
     async (interaction) => {
 
-        // Chỉ xử lý button
         if (!interaction.isButton()) {
             return;
         }
 
+        const customId =
+            interaction.customId;
+
         // ========================================
-        // NÚT TRANG TRƯỚC / TRANG SAU
+        // NÚT CHUYỂN TRANG
         // ========================================
 
         if (
-            interaction.customId.startsWith(
-                "page_prev_"
-            ) ||
-            interaction.customId.startsWith(
-                "page_next_"
-            )
+            customId.startsWith("page_prev_") ||
+            customId.startsWith("page_next_")
         ) {
 
-            // ========================================
-            // CHỐNG ACK 2 LẦN
-            // ========================================
-
-            if (
-                interaction.replied ||
-                interaction.deferred
-            ) {
-                return;
-            }
+            /*
+             * QUAN TRỌNG:
+             *
+             * Không dùng deferUpdate().
+             *
+             * Chỉ gọi interaction.update()
+             * đúng 1 lần.
+             *
+             * Đây là nguyên nhân chính gây
+             * lỗi 40060 trong code cũ.
+             */
 
             try {
 
@@ -486,15 +458,19 @@ client.on(
                 // ========================================
 
                 const parts =
-                    interaction.customId
-                        .split("_");
+                    customId.split("_");
 
                 const currentPage =
-                    Number(
-                        parts[
-                            parts.length - 1
-                        ]
+                    parseInt(
+                        parts[parts.length - 1],
+                        10
                     );
+
+                if (
+                    Number.isNaN(currentPage)
+                ) {
+                    return;
+                }
 
                 let newPage =
                     currentPage;
@@ -504,13 +480,13 @@ client.on(
                 // ========================================
 
                 if (
-                    interaction.customId
-                        .startsWith(
-                            "page_prev_"
-                        )
+                    customId.startsWith(
+                        "page_prev_"
+                    )
                 ) {
 
-                    newPage--;
+                    newPage =
+                        currentPage - 1;
                 }
 
                 // ========================================
@@ -518,17 +494,17 @@ client.on(
                 // ========================================
 
                 if (
-                    interaction.customId
-                        .startsWith(
-                            "page_next_"
-                        )
+                    customId.startsWith(
+                        "page_next_"
+                    )
                 ) {
 
-                    newPage++;
+                    newPage =
+                        currentPage + 1;
                 }
 
                 // ========================================
-                // TÍNH TỔNG TRANG
+                // TỔNG TRANG
                 // ========================================
 
                 const totalPages =
@@ -556,29 +532,13 @@ client.on(
                     );
 
                 // ========================================
-                // ACK INTERACTION
+                // UPDATE TRỰC TIẾP
                 // ========================================
 
-                await interaction.deferUpdate();
-
-                // ========================================
-                // TẠO LẠI TOÀN BỘ COMPONENT
-                //
-                // Emoji sẽ được đọc lại từ
-                // characters.json ở đây.
-                // ========================================
-
-                const pageData =
+                await interaction.update(
                     createCharacterList(
                         newPage
-                    );
-
-                // ========================================
-                // EDIT MESSAGE
-                // ========================================
-
-                await interaction.message.edit(
-                    pageData
+                    )
                 );
 
             } catch (error) {
@@ -597,77 +557,53 @@ client.on(
         // ========================================
 
         if (
-            interaction.customId.startsWith(
-                "char_"
-            )
+            customId.startsWith("char_")
         ) {
-
-            // ========================================
-            // CHỐNG ACK 2 LẦN
-            // ========================================
-
-            if (
-                interaction.replied ||
-                interaction.deferred
-            ) {
-                return;
-            }
-
-            // ========================================
-            // LẤY KEY
-            // ========================================
-
-            const key =
-                interaction.customId
-                    .substring(5);
-
-            const character =
-                characters[key];
-
-            // ========================================
-            // KHÔNG TÌM THẤY
-            // ========================================
-
-            if (!character) {
-
-                try {
-
-                    await interaction.reply({
-                        content:
-                            "❌ Không tìm thấy nhân vật.",
-                        ephemeral: true
-                    });
-
-                } catch (error) {
-
-                    console.error(
-                        "❌ Lỗi interaction:",
-                        error
-                    );
-                }
-
-                return;
-            }
-
-            // ========================================
-            // LẤY TÊN NGƯỜI BẤM
-            // ========================================
-
-            const username =
-                interaction.member
-                    ?.displayName ||
-                interaction.user.globalName ||
-                interaction.user.username;
-
-            // ========================================
-            // GỬI ẢNH
-            // ========================================
 
             try {
 
+                const key =
+                    customId.substring(5);
+
+                const character =
+                    characters[key];
+
+                if (!character) {
+
+                    if (
+                        !interaction.replied &&
+                        !interaction.deferred
+                    ) {
+
+                        await interaction.reply({
+                            content:
+                                "❌ Không tìm thấy nhân vật.",
+                            flags: 64
+                        });
+                    }
+
+                    return;
+                }
+
+                // ========================================
+                // TÊN NGƯỜI BẤM
+                // ========================================
+
+                const username =
+                    interaction.member
+                        ?.displayName ||
+                    interaction.user.globalName ||
+                    interaction.user.username;
+
+                // ========================================
+                // GỬI ẢNH
+                // ========================================
+
                 await interaction.reply({
+
                     content:
                         `👤 **${username}** đã chọn **${character.name}**`,
+
                     files: [
                         character.image
                     ]
