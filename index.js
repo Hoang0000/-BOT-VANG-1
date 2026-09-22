@@ -626,7 +626,7 @@ client.on(
             } catch (error) {
 
                 console.error(
-                    "❌ Lỗi nút nhân vật:",
+                    "Lỗi nút nhân vật:",
                     error
                 );
             }
