@@ -591,7 +591,7 @@ client.on(
 
                         await interaction.reply({
                             content:
-                                "❌ Không tìm thấy nhân vật.",
+                                "❌ Không tìm thấy nhân vật. Gõ lệnh !list",
                             ephemeral: true
                         });
                     }
