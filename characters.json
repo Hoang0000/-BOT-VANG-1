@@ -267,9 +267,12 @@
     "id": "1547845328881979533"
   }
   },
-    "si": {
+    "si13": {
     "name": "Si",
-    "image": "./images/Si.jpg",
+    "aliases": [
+    "si"
+    ],
+    "image": "./images/Si13.jpg",
     "emoji": {
     "name": "Akekuri",
     "id": "1547845328881979533"
